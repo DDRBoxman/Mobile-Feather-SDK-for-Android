@@ -25,7 +25,7 @@
         <attr format="integer" name="firstButton" />
         <attr format="integer" name="centerButton" />
         <attr format="integer" name="lastButton" />
-        <attr name="orientation" />
+        <attr name="featherOrientation" />
     </declare-styleable>
 
     
@@ -45,7 +45,7 @@
     <declare-styleable name="CellLayout">
         <attr name="startPadding" format="dimension" />
         <attr name="endPadding" format="dimension" />
-        <attr name="topPadding" format="dimension" />
+        <attr name="featherTopPadding" format="dimension"/>
         <attr name="bottomPadding" format="dimension" />
         <attr name="horizontalPadding" format="dimension" />
         <attr name="verticalPadding" format="dimension" />
@@ -53,9 +53,9 @@
         <attr name="rows" format="integer" />
     </declare-styleable>
     
-    <!-- <attr format="reference" name="imageButtonRadioButtonStyle" /> -->
+    <attr format="reference" name="imageButtonRadioButtonStyle" />
     
-    <attr name="orientation">
+    <attr name="featherOrientation">
         <enum name="horizontal" value="0" />
         <enum name="vertical" value="1" />
     </attr>

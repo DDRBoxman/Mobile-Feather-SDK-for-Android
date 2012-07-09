@@ -126,7 +126,7 @@ public class CellLayout extends ViewGroup {
 
 		mStartPadding = a.getDimensionPixelSize( R.styleable.CellLayout_startPadding, 0 );
 		mEndPadding = a.getDimensionPixelSize( R.styleable.CellLayout_endPadding, 0 );
-		mTopPadding = a.getDimensionPixelSize( R.styleable.CellLayout_topPadding, 0 );
+		mTopPadding = a.getDimensionPixelSize( R.styleable.CellLayout_featherTopPadding, 0 );
 		mBottomPadding = a.getDimensionPixelSize( R.styleable.CellLayout_bottomPadding, 0 );
 
 		// logger.log( "padding", mStartPadding, mEndPadding, mTopPadding, mBottomPadding );

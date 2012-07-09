@@ -19,7 +19,7 @@
     <style name="FeatherCellLayout">
         <item name="startPadding">@dimen/feather_workspace_start_padding</item>
         <item name="endPadding">@dimen/feather_workspace_end_padding</item>
-        <item name="topPadding">@dimen/feather_workspace_top_padding</item>
+        <item name="featherTopPadding">@dimen/feather_workspace_top_padding</item>
         <item name="bottomPadding">@dimen/feather_workspace_bottom_padding</item>
         <item name="horizontalPadding">@dimen/feather_workspace_cell_horizontal_padding</item>
         <item name="verticalPadding">@dimen/feather_workspace_cell_vertical_padding</item>
