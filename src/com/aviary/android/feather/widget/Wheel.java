@@ -21,7 +21,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
@@ -30,54 +32,62 @@ import android.view.ViewConfiguration;
 import com.aviary.android.feather.R;
 import com.aviary.android.feather.graphics.LinearGradientDrawable;
 import com.aviary.android.feather.library.utils.ReflectionUtils;
+import com.aviary.android.feather.library.utils.ReflectionUtils.ReflectionException;
 import com.aviary.android.feather.widget.IFlingRunnable.FlingRunnableView;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class Wheel.
  */
-public class Wheel extends View implements OnGestureListener, FlingRunnableView {
+public class Wheel extends View implements OnGestureListener, FlingRunnableView, VibrationWidget {
 
 	/** The Constant LOG_TAG. */
 	static final String LOG_TAG = "wheel";
 
 	/**
-	 * The listener interface for receiving onScroll events.
-	 * The class that is interested in processing a onScroll
-	 * event implements this interface, and the object created
-	 * with that class is registered with a component using the
-	 * component's <code>addOnScrollListener<code> method. When
+	 * The listener interface for receiving onScroll events. The class that is interested in processing a onScroll event implements
+	 * this interface, and the object created with that class is registered with a component using the component's
+	 * <code>addOnScrollListener<code> method. When
 	 * the onScroll event occurs, that object's appropriate
 	 * method is invoked.
-	 *
+	 * 
 	 * @see OnScrollEvent
 	 */
 	public interface OnScrollListener {
 
 		/**
 		 * On scroll started.
-		 *
-		 * @param view the view
-		 * @param value the value
-		 * @param roundValue the round value
+		 * 
+		 * @param view
+		 *           the view
+		 * @param value
+		 *           the value
+		 * @param roundValue
+		 *           the round value
 		 */
 		void onScrollStarted( Wheel view, float value, int roundValue );
 
 		/**
 		 * On scroll.
-		 *
-		 * @param view the view
-		 * @param value the value
-		 * @param roundValue the round value
+		 * 
+		 * @param view
+		 *           the view
+		 * @param value
+		 *           the value
+		 * @param roundValue
+		 *           the round value
 		 */
 		void onScroll( Wheel view, float value, int roundValue );
 
 		/**
 		 * On scroll finished.
-		 *
-		 * @param view the view
-		 * @param value the value
-		 * @param roundValue the round value
+		 * 
+		 * @param view
+		 *           the view
+		 * @param value
+		 *           the value
+		 * @param roundValue
+		 *           the round value
 		 */
 		void onScrollFinished( Wheel view, float value, int roundValue );
 	}
@@ -87,94 +97,97 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 
 	/** The m padding left. */
 	int mPaddingLeft = 0;
-	
+
 	/** The m padding right. */
 	int mPaddingRight = 0;
-	
+
 	/** The m padding top. */
 	int mPaddingTop = 0;
-	
+
 	/** The m padding bottom. */
 	int mPaddingBottom = 0;
-	
+
 	/** The m height. */
 	int mWidth, mHeight;
-	
+
 	/** The m in layout. */
 	boolean mInLayout = false;
 
 	/** The m min x. */
 	int mMaxX, mMinX;
-	
+
 	/** The m scroll listener. */
 	OnScrollListener mScrollListener;
-	
+
 	/** The m paint. */
 	Paint mPaint;
-	
+
 	/** The m shader3. */
 	Shader mShader3;
-	
+
 	/** The m tick bitmap. */
 	Bitmap mTickBitmap;
-	
+
 	/** The m indicator. */
 	Bitmap mIndicator;
-	
+
 	/** The m df. */
 	DrawFilter mFast, mDF;
-	
+
 	/** The m gesture detector. */
 	GestureDetector mGestureDetector;
-	
+
 	/** The m is first scroll. */
 	boolean mIsFirstScroll;
-	
+
 	/** The m fling runnable. */
 	IFlingRunnable mFlingRunnable;
-	
+
 	/** The m animation duration. */
 	int mAnimationDuration = 200;
-	
+
 	/** The m to left. */
 	boolean mToLeft;
-	
+
 	/** The m touch slop. */
 	int mTouchSlop;
-	
+
 	/** The m indicator x. */
 	float mIndicatorX = 0;
-	
+
 	/** The m original x. */
 	int mOriginalX = 0;
-	
+
 	/** The m original delta x. */
 	int mOriginalDeltaX = 0;
-	
+
 	/** The m tick space. */
 	float mTickSpace = 30;
-	
+
 	/** The m wheel size factor. */
 	int mWheelSizeFactor = 2;
-	
+
 	/** The m ticks count. */
 	int mTicksCount = 18;
-	
+
 	/** The m ticks size. */
 	float mTicksSize = 7.0f;
-	
+
 	/** The m vibrator. */
 	Vibrator mVibrator;
-	
+
 	/** The m vibration handler. */
-	Handler mVibrationHandler;
+	static Handler mVibrationHandler;
 
 	/**
 	 * Instantiates a new wheel.
-	 *
-	 * @param context the context
-	 * @param attrs the attrs
-	 * @param defStyle the def style
+	 * 
+	 * @param context
+	 *           the context
+	 * @param attrs
+	 *           the attrs
+	 * @param defStyle
+	 *           the def style
 	 */
 	public Wheel( Context context, AttributeSet attrs, int defStyle ) {
 		super( context, attrs, defStyle );
@@ -183,9 +196,11 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 
 	/**
 	 * Instantiates a new wheel.
-	 *
-	 * @param context the context
-	 * @param attrs the attrs
+	 * 
+	 * @param context
+	 *           the context
+	 * @param attrs
+	 *           the attrs
 	 */
 	public Wheel( Context context, AttributeSet attrs ) {
 		this( context, attrs, 0 );
@@ -193,8 +208,9 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 
 	/**
 	 * Instantiates a new wheel.
-	 *
-	 * @param context the context
+	 * 
+	 * @param context
+	 *           the context
 	 */
 	public Wheel( Context context ) {
 		this( context, null );
@@ -202,14 +218,17 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 
 	/**
 	 * Sets the on scroll listener.
-	 *
-	 * @param listener the new on scroll listener
+	 * 
+	 * @param listener
+	 *           the new on scroll listener
 	 */
 	public void setOnScrollListener( OnScrollListener listener ) {
 		mScrollListener = listener;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.view.View#setPadding(int, int, int, int)
 	 */
 	@Override
@@ -223,17 +242,26 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 
 	/**
 	 * Inits the.
-	 *
-	 * @param context the context
-	 * @param attrs the attrs
-	 * @param defStyle the def style
+	 * 
+	 * @param context
+	 *           the context
+	 * @param attrs
+	 *           the attrs
+	 * @param defStyle
+	 *           the def style
 	 */
 	private void init( Context context, AttributeSet attrs, int defStyle ) {
 
-		if ( android.os.Build.VERSION.SDK_INT > 8 )
-			mFlingRunnable = (IFlingRunnable) ReflectionUtils.newInstance( "com.aviary.android.feather.widget.Fling9Runnable", new Class<?>[] { FlingRunnableView.class, int.class }, this, mAnimationDuration );
-		else
+		if ( android.os.Build.VERSION.SDK_INT > 8 ) {
+			try {
+				mFlingRunnable = (IFlingRunnable) ReflectionUtils.newInstance( "com.aviary.android.feather.widget.Fling9Runnable",
+						new Class<?>[] { FlingRunnableView.class, int.class }, this, mAnimationDuration );
+			} catch ( ReflectionException e ) {
+				mFlingRunnable = new Fling8Runnable( this, mAnimationDuration );
+			}
+		} else {
 			mFlingRunnable = new Fling8Runnable( this, mAnimationDuration );
+		}
 
 		TypedArray a = context.obtainStyledAttributes( attrs, R.styleable.Wheel, defStyle, 0 );
 
@@ -250,8 +278,12 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 		setFocusable( true );
 		setFocusableInTouchMode( true );
 
-		mTouchSlop = ViewConfiguration.getTouchSlop();
-
+		mTouchSlop = ViewConfiguration.get( context ).getScaledTouchSlop();
+		
+		DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+		
+		TypedValue.complexToDimensionPixelSize( 25, metrics  );
+		
 		try {
 			mVibrator = (Vibrator) context.getSystemService( Context.VIBRATOR_SERVICE );
 		} catch ( Exception e ) {
@@ -259,22 +291,7 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 		}
 
 		if ( mVibrator != null ) {
-			mVibrationHandler = new Handler() {
-
-				@Override
-				public void handleMessage( Message msg ) {
-					super.handleMessage( msg );
-
-					switch ( msg.what ) {
-						case MSG_VIBRATE:
-							try {
-								mVibrator.vibrate( 10 );
-							} catch ( SecurityException e ) {
-								// missing VIBRATE permission
-							}
-					}
-				}
-			};
+			setVibrationEnabled( true );
 		}
 
 		int[] colors = { 0xffa1a1a1, 0xffa1a1a1, 0xffffffff, 0xffa1a1a1, 0xffa1a1a1 };
@@ -282,7 +299,9 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 		setBackgroundDrawable( new LinearGradientDrawable( Orientation.LEFT_RIGHT, colors, positions ) );
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.view.View#setBackgroundColor(int)
 	 */
 	@Override
@@ -290,7 +309,9 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 		super.setBackgroundColor( color );
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.view.View#setBackgroundDrawable(android.graphics.drawable.Drawable)
 	 */
 	@Override
@@ -298,7 +319,9 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 		super.setBackgroundDrawable( d );
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.view.View#setBackgroundResource(int)
 	 */
 	@Override
@@ -308,9 +331,11 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 
 	/**
 	 * Make bitmap3.
-	 *
-	 * @param width the width
-	 * @param height the height
+	 * 
+	 * @param width
+	 *           the width
+	 * @param height
+	 *           the height
 	 * @return the bitmap
 	 */
 	private static Bitmap makeBitmap3( int width, int height ) {
@@ -332,9 +357,11 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 
 	/**
 	 * Make ticker bitmap.
-	 *
-	 * @param width the width
-	 * @param height the height
+	 * 
+	 * @param width
+	 *           the width
+	 * @param height
+	 *           the height
 	 * @return the bitmap
 	 */
 	private static Bitmap makeTickerBitmap( int width, int height ) {
@@ -347,29 +374,39 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 		p.setDither( true );
 
 		p.setColor( 0xFF888888 );
-		RectF rect = new RectF( 0, 10, width, height - 25 );
+		
+		float h = (float)height;
+		float y = (h+10.0f)/10.0f;
+		float y2 = y*2.5f;
+		
+		RectF rect = new RectF( 0, y, width, height - y2 );
 		c.drawRoundRect( rect, ellipse, ellipse, p );
 
 		p.setColor( 0xFFFFFFFF );
-		rect = new RectF( 0, 25, width, height - 10 );
+		rect = new RectF( 0, y2, width, height - y );
 		c.drawRoundRect( rect, ellipse, ellipse, p );
 
 		p.setColor( 0xFFCCCCCC );
-		rect = new RectF( 0, 12, width, height - 12 );
+		rect = new RectF( 0, y+2, width, height - (y+2) );
 		c.drawRoundRect( rect, ellipse, ellipse, p );
 		return bm;
 	}
 
 	/**
 	 * Make bitmap indicator.
-	 *
-	 * @param width the width
-	 * @param height the height
+	 * 
+	 * @param width
+	 *           the width
+	 * @param height
+	 *           the height
 	 * @return the bitmap
 	 */
 	private static Bitmap makeBitmapIndicator( int width, int height ) {
 
 		float ellipse = width / 2;
+		float h = (float)height;
+		float y = (h+10.0f)/10.0f;
+		float y2 = y*2.5f;		
 
 		Bitmap bm = Bitmap.createBitmap( width, height, Bitmap.Config.ARGB_8888 );
 		Canvas c = new Canvas( bm );
@@ -378,14 +415,14 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 		p.setDither( true );
 
 		p.setColor( 0xFF666666 );
-		RectF rect = new RectF( 0, 10, width, height - 25 );
+		RectF rect = new RectF( 0, y, width, height - y2 );
 		c.drawRoundRect( rect, ellipse, ellipse, p );
 
 		p.setColor( 0xFFFFFFFF );
-		rect = new RectF( 0, 25, width, height - 10 );
+		rect = new RectF( 0, y2, width, height - y );
 		c.drawRoundRect( rect, ellipse, ellipse, p );
 
-		rect = new RectF( 0, 12, width, height - 12 );
+		rect = new RectF( 0, y+2, width, height - (y+2) );
 		int colors[] = { 0xFF0076E7, 0xFF00BBFF, 0xFF0076E7 };
 		float positions[] = { 0f, 0.5f, 1f };
 		LinearGradient gradient = new LinearGradient( 0, 0, width, 0, colors, positions, TileMode.REPEAT );
@@ -398,11 +435,13 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 
 	/** The m ticks easing. */
 	Easing mTicksEasing = new Sine();
-	
+
 	/** The m draw matrix. */
 	Matrix mDrawMatrix = new Matrix();
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.view.View#onDraw(android.graphics.Canvas)
 	 */
 	@Override
@@ -461,7 +500,9 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.view.View#onDetachedFromWindow()
 	 */
 	@Override
@@ -478,8 +519,9 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 
 	/**
 	 * Sets the wheel scale factor.
-	 *
-	 * @param value the new wheel scale factor
+	 * 
+	 * @param value
+	 *           the new wheel scale factor
 	 */
 	public void setWheelScaleFactor( int value ) {
 		mWheelSizeFactor = value;
@@ -488,9 +530,40 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 		postInvalidate();
 	}
 
+	@Override
+	public synchronized void setVibrationEnabled( boolean value ) {
+		if ( !value ) {
+			mVibrationHandler = null;
+		} else {
+			if ( null == mVibrationHandler ) {
+				mVibrationHandler = new Handler() {
+
+					@Override
+					public void handleMessage( Message msg ) {
+						super.handleMessage( msg );
+
+						switch ( msg.what ) {
+							case MSG_VIBRATE:
+								try {
+									mVibrator.vibrate( 10 );
+								} catch ( SecurityException e ) {
+									// missing VIBRATE permission
+								}
+						}
+					}
+				};
+			}
+		}
+	}
+
+	@Override
+	public synchronized boolean getVibrationEnabled() {
+		return mVibrationHandler != null;
+	}
+
 	/**
 	 * Gets the wheel scale factor.
-	 *
+	 * 
 	 * @return the wheel scale factor
 	 */
 	public int getWheelScaleFactor() {
@@ -499,14 +572,16 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 
 	/**
 	 * Gets the tick space.
-	 *
+	 * 
 	 * @return the tick space
 	 */
 	public float getTickSpace() {
 		return mTickSpace;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.view.View#onLayout(boolean, int, int, int, int)
 	 */
 	@Override
@@ -540,7 +615,9 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 		mForceLayout = false;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.view.GestureDetector.OnGestureListener#onDown(android.view.MotionEvent)
 	 */
 	@Override
@@ -560,7 +637,9 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.view.GestureDetector.OnGestureListener#onFling(android.view.MotionEvent, android.view.MotionEvent, float, float)
 	 */
 	@Override
@@ -584,13 +663,17 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 		return true;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.view.GestureDetector.OnGestureListener#onLongPress(android.view.MotionEvent)
 	 */
 	@Override
 	public void onLongPress( MotionEvent arg0 ) {}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.view.GestureDetector.OnGestureListener#onScroll(android.view.MotionEvent, android.view.MotionEvent, float, float)
 	 */
 	@Override
@@ -624,13 +707,17 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 		return true;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.view.GestureDetector.OnGestureListener#onShowPress(android.view.MotionEvent)
 	 */
 	@Override
 	public void onShowPress( MotionEvent arg0 ) {}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.view.GestureDetector.OnGestureListener#onSingleTapUp(android.view.MotionEvent)
 	 */
 	@Override
@@ -638,7 +725,9 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 		return false;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.view.View#onTouchEvent(android.view.MotionEvent)
 	 */
 	@Override
@@ -649,8 +738,7 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 		if ( action == MotionEvent.ACTION_UP ) {
 			mDF = null;
 			onUp();
-		} else if ( action == MotionEvent.ACTION_CANCEL ) {
-		}
+		} else if ( action == MotionEvent.ACTION_CANCEL ) {}
 		return retValue;
 	}
 
@@ -666,9 +754,11 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 
 	/**
 	 * Gets the limited motion scroll amount.
-	 *
-	 * @param motionToLeft the motion to left
-	 * @param deltaX the delta x
+	 * 
+	 * @param motionToLeft
+	 *           the motion to left
+	 * @param deltaX
+	 *           the delta x
 	 * @return the limited motion scroll amount
 	 */
 	int getLimitedMotionScrollAmount( boolean motionToLeft, int deltaX ) {
@@ -723,7 +813,7 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 
 	/**
 	 * Gets the real width.
-	 *
+	 * 
 	 * @return the real width
 	 */
 	private int getRealWidth() {
@@ -738,7 +828,9 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 	 */
 	private class ScrollSelectionNotifier implements Runnable {
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see java.lang.Runnable#run()
 		 */
 		@Override
@@ -801,7 +893,7 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 
 	/**
 	 * Gets the value.
-	 *
+	 * 
 	 * @return the value
 	 */
 	public float getValue() {
@@ -813,7 +905,7 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 
 	/**
 	 * Gets the tick value.
-	 *
+	 * 
 	 * @return the tick value
 	 */
 	int getTickValue() {
@@ -822,7 +914,7 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 
 	/**
 	 * Return the total number of ticks available for scrolling.
-	 *
+	 * 
 	 * @return the ticks count
 	 */
 	public int getTicksCount() {
@@ -832,19 +924,19 @@ public class Wheel extends View implements OnGestureListener, FlingRunnableView 
 			return 0;
 		}
 	}
-	
+
 	/**
 	 * Gets the ticks.
-	 *
+	 * 
 	 * @return the ticks
 	 */
-	public int getTicks(){
+	public int getTicks() {
 		return mTicksCount;
 	}
 
 	/**
 	 * Gets the current page.
-	 *
+	 * 
 	 * @return the current page
 	 */
 	int getCurrentPage() {

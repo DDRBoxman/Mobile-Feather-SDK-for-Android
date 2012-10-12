@@ -11,7 +11,6 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import com.aviary.android.feather.library.graphics.drawable.IBitmapDrawable;
-import com.aviary.android.feather.library.log.LoggerFactory;
 
 // TODO: Auto-generated Javadoc
 /**

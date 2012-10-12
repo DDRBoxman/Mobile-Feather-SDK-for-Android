@@ -8,10 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import com.aviary.android.feather.Constants;
 import com.aviary.android.feather.R;
+import com.aviary.android.feather.library.filters.FilterLoaderFactory;
 import com.aviary.android.feather.library.filters.FilterLoaderFactory.Filters;
-import com.aviary.android.feather.library.filters.FilterService;
 import com.aviary.android.feather.library.filters.INativeRangeFilter;
-import com.aviary.android.feather.library.filters.NativeFilterProxy;
 import com.aviary.android.feather.library.moa.Moa;
 import com.aviary.android.feather.library.moa.MoaActionList;
 import com.aviary.android.feather.library.moa.MoaResult;
@@ -35,19 +34,22 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 
 	/**
 	 * Instantiates a new native effect range panel.
-	 *
-	 * @param context the context
-	 * @param type the type
-	 * @param resourcesBaseName the resources base name
+	 * 
+	 * @param context
+	 *           the context
+	 * @param type
+	 *           the type
+	 * @param resourcesBaseName
+	 *           the resources base name
 	 */
 	public NativeEffectRangePanel( EffectContext context, Filters type, String resourcesBaseName ) {
 		super( context, type, resourcesBaseName );
-		
-		FilterService service = getContext().getService( FilterService.class );
-		mFilter = service.load( type );
+		mFilter = FilterLoaderFactory.get( type );
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.aviary.android.feather.effects.ColorMatrixEffectPanel#onCreate(android.graphics.Bitmap)
 	 */
 	@Override
@@ -59,28 +61,36 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 		enableFastPreview = Constants.getFastPreviewEnabled();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.aviary.android.feather.effects.ColorMatrixEffectPanel#onActivate()
 	 */
 	@Override
 	public void onActivate() {
 		super.onActivate();
 
+		disableHapticIsNecessary( mWheel );
+
 		int ticksCount = mWheel.getTicksCount();
 		mWheelRadio.setTicksNumber( ticksCount, mWheel.getWheelScaleFactor() );
 		mPreview = BitmapUtils.copy( mBitmap, Bitmap.Config.ARGB_8888 );
 	}
 
-
-	/* (non-Javadoc)
-	 * @see com.aviary.android.feather.effects.ColorMatrixEffectPanel#onScrollStarted(com.aviary.android.feather.widget.Wheel, float, int)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.aviary.android.feather.effects.ColorMatrixEffectPanel#onScrollStarted(com.aviary.android.feather.widget.Wheel, float,
+	 * int)
 	 */
 	@Override
 	public void onScrollStarted( Wheel view, float value, int roundValue ) {
 		mLogger.info( "onScrollStarted" );
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.aviary.android.feather.effects.ColorMatrixEffectPanel#onScroll(com.aviary.android.feather.widget.Wheel, float, int)
 	 */
 	@Override
@@ -88,8 +98,11 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 		mWheelRadio.setValue( value );
 	}
 
-	/* (non-Javadoc)
-	 * @see com.aviary.android.feather.effects.ColorMatrixEffectPanel#onScrollFinished(com.aviary.android.feather.widget.Wheel, float, int)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.aviary.android.feather.effects.ColorMatrixEffectPanel#onScrollFinished(com.aviary.android.feather.widget.Wheel,
+	 * float, int)
 	 */
 	@Override
 	public void onScrollFinished( Wheel view, float value, int roundValue ) {
@@ -102,38 +115,46 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 		}
 		mLastValue = roundValue;
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.aviary.android.feather.effects.AbstractEffectPanel#onProgressEnd()
 	 */
 	@Override
 	protected void onProgressEnd() {
-		if( !enableFastPreview )
+		if ( !enableFastPreview )
 			onProgressModalEnd();
 		else
 			super.onProgressEnd();
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.aviary.android.feather.effects.AbstractEffectPanel#onProgressStart()
 	 */
 	@Override
 	protected void onProgressStart() {
-		if( !enableFastPreview )
+		if ( !enableFastPreview )
 			onProgressModalStart();
 		else
 			super.onProgressStart();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.aviary.android.feather.effects.AbstractEffectPanel#onDestroy()
 	 */
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.aviary.android.feather.effects.ColorMatrixEffectPanel#onDeactivate()
 	 */
 	@Override
@@ -142,7 +163,9 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 		super.onDeactivate();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.aviary.android.feather.effects.ColorMatrixEffectPanel#onGenerateResult()
 	 */
 	@Override
@@ -157,7 +180,9 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.aviary.android.feather.effects.AbstractEffectPanel#onBackPressed()
 	 */
 	@Override
@@ -167,7 +192,9 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 		return super.onBackPressed();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.aviary.android.feather.effects.AbstractEffectPanel#onCancelled()
 	 */
 	@Override
@@ -177,7 +204,9 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 		super.onCancelled();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.aviary.android.feather.effects.AbstractEffectPanel#getIsChanged()
 	 */
 	@Override
@@ -187,7 +216,7 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 
 	/**
 	 * Kill current task.
-	 *
+	 * 
 	 * @return true, if successful
 	 */
 	boolean killCurrentTask() {
@@ -199,8 +228,9 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 
 	/**
 	 * Apply a filter.
-	 *
-	 * @param value the value
+	 * 
+	 * @param value
+	 *           the value
 	 */
 	protected void applyFilter( float value ) {
 		killCurrentTask();
@@ -218,8 +248,9 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 
 	/**
 	 * Generate content view.
-	 *
-	 * @param inflater the inflater
+	 * 
+	 * @param inflater
+	 *           the inflater
 	 * @return the view
 	 */
 	protected View generateContentView( LayoutInflater inflater ) {
@@ -236,14 +267,17 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 
 		/**
 		 * Instantiates a new apply filter task.
-		 *
-		 * @param value the value
+		 * 
+		 * @param value
+		 *           the value
 		 */
 		public ApplyFilterTask( float value ) {
 			( (INativeRangeFilter) mFilter ).setValue( value );
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see android.os.AsyncTask#onPreExecute()
 		 */
 		@Override
@@ -252,7 +286,7 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 			mLogger.info( this, "onPreExecute" );
 
 			try {
-				mResult = NativeFilterProxy.prepareActions( ( (INativeRangeFilter) mFilter ).getActions(), mBitmap, mPreview, -1, -1 );
+				mResult = ( (INativeRangeFilter) mFilter ).prepare( mBitmap, mPreview, 1, 1 );
 			} catch ( JSONException e ) {
 				e.printStackTrace();
 			}
@@ -270,7 +304,9 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 			mIsRendering = false;
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see android.os.AsyncTask#doInBackground(Params[])
 		 */
 		@Override
@@ -282,15 +318,15 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 			long t1 = System.currentTimeMillis();
 			try {
 				mResult.execute();
-				mActions = ((INativeRangeFilter)mFilter).getActions();
+				mActions = ( (INativeRangeFilter) mFilter ).getActions();
 			} catch ( Exception exception ) {
 				exception.printStackTrace();
 				mLogger.error( exception.getMessage() );
 				return null;
 			}
 			long t2 = System.currentTimeMillis();
-			
-			if( null != mTrackingAttributes ){
+
+			if ( null != mTrackingAttributes ) {
 				mTrackingAttributes.put( "renderTime", Long.toString( t2 - t1 ) );
 			}
 
@@ -298,7 +334,9 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 			return mPreview;
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
 		 */
 		@Override
@@ -311,7 +349,7 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 			onProgressEnd();
 
 			if ( result != null ) {
-				if( SystemUtils.isHoneyComb() ){
+				if ( SystemUtils.isHoneyComb() ) {
 					Moa.notifyPixelsChanged( mPreview );
 				}
 				onPreviewChanged( mPreview, true );
@@ -333,20 +371,24 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 		/** The m progress. */
 		ProgressDialog mProgress = new ProgressDialog( getContext().getBaseContext() );
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see android.os.AsyncTask#onPreExecute()
 		 */
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			mProgress.setTitle( getContext().getBaseContext().getString( R.string.effet_loading_title ) );
+			mProgress.setTitle( getContext().getBaseContext().getString( R.string.feather_loading_title ) );
 			mProgress.setMessage( getContext().getBaseContext().getString( R.string.effect_loading_message ) );
 			mProgress.setIndeterminate( true );
 			mProgress.setCancelable( false );
 			mProgress.show();
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see android.os.AsyncTask#doInBackground(Params[])
 		 */
 		@Override
@@ -361,7 +403,9 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 			return null;
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
 		 */
 		@Override
@@ -370,7 +414,7 @@ public class NativeEffectRangePanel extends ColorMatrixEffectPanel {
 
 			mLogger.info( "GenerateResultTask::onPostExecute" );
 
-			if( getContext().getBaseActivity().isFinishing() ) return;
+			if ( getContext().getBaseActivity().isFinishing() ) return;
 			if ( mProgress.isShowing() ) mProgress.dismiss();
 
 			onComplete( mPreview, mActions );
